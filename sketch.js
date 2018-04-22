@@ -7,29 +7,42 @@ var jump = 7;
 var gravity = 0.3;
 var jumpAllow = false;
 var bullets;
+var platforms;
+var enemies;
 
 function setup() {
 	createCanvas(1000, 600);
 
+	// setup for the character
 	character = createSprite(20, 300, 20, 20);
 	character.speed = 3;
 
+	// setup for the enemies
+	enemies = new Group();
+	for (let i = 1; i <= 5; i++) {
+		enemy = createSprite(200*i, 300, 20, 20);
+		enemies.add(enemy);
+	}
+
+	// setup for the ground
 	groundImg = loadImage("assets/ground.png");
 	ground = createSprite(width/2, height+80);
-	ground.immovable = true;
 	ground.addImage(groundImg);
 	ground.scale = 2;
 
-	wallLeft = createSprite(0, height/2, 10, height);
+	// setup for the leftBound
+	wallLeft = createSprite(-290, height/2, 10, height);
 	wallLeft.immovable = true;
-
+	
+	// setup for the bullets
 	bullets = new Group();
 
+	// setup for the platforms
 	platforms = new Group();
-	for (var i = 0; i < 5; i++) {
-		x = Math.floor((Math.random() * 1000) + 1);
-		y = Math.floor((Math.random() * 500) + 1);
-		createPlatform(x, y, 200, 10);
+	for (var i = 0; i < 8; i++) {
+		// x = Math.floor((Math.random() * 1000) + 1);
+		// y = Math.floor((Math.random() * 500) + 1);
+		createPlatform(150*i, 300, 20, 10);
 	}
 
 }
@@ -38,20 +51,43 @@ function draw() {
 	background(0);
 	drawSprites();
 
-	jumpAllow = true;
+	// getting the camera to follow a player untill a certain limit
+	camera.position.x = character.position.x;
+	camera.position.y = character.position.y;
+	if (camera.position.x <= 206) {
+		camera.position.x = 206;
+	}
+	if (camera.position.y >= 300) {
+		camera.position.y = 300;
+	}
+
+	// the player can only jump when touching the ground
+	// 
+	jumpAllow = false;
 	for (var i = 0; i < platforms.length; i++) {
 		if (character.collide(ground) || character.collide(platforms[i])){
 			character.velocity.y = 0;
 			jumpAllow = true;
+		}
+		for (let y = 0; y < enemies.length; y++) {
+			if (enemies[y].collide(ground) || enemies[y].collide(platforms[i])){
+				enemies[y].velocity.y = 0;
+			}
 		}
 	}
 
 	character.debug = mouseIsPressed;
 	ground.debug = mouseIsPressed;
 	wallLeft.debug = mouseIsPressed;
-	character.velocity.x = 0;
-  	character.velocity.y += gravity;
 
+	// apply gravity
+	character.velocity.x = 0;
+	character.velocity.y += gravity;
+	for (let i = 0; i < enemies.length; i++) {
+		enemies[i].velocity.y += gravity;
+	}
+
+	//  commands
 	if (keyIsDown(RIGHT_ARROW)){
 		character.velocity.x = 3;
 	}else if (keyIsDown(LEFT_ARROW)){
@@ -66,6 +102,7 @@ function draw() {
 		bullets.add(bullet);
 	}
 
+	// bullets colisions and setup
 	for (var i = 0; i < bullets.length; i++){
 		bullets[i].velocity.x = 5;
 		for (var k = 0; k < platforms.length; k++){
@@ -78,6 +115,7 @@ function draw() {
 
 }
 
+// more flexible way of creating platforms
 function createPlatform(_x, _y, _h, _w){
 	plat = createSprite(_x, _y, _h, _w);
 	platforms.add(plat);
