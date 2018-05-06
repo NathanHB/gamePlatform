@@ -4,123 +4,96 @@ var platforms;
 var plat;
 var wallLeft;
 var jump = 7;
-var gravity = 0.3;
+var gravity = 0.2;
 var jumpAllow = false;
-var bullets;
+var charbullets;
+var enemybullets;
 var platforms;
 var enemies;
+var shootRate = 1;
+var nextFire = 0;
+var direction = 'L'
+var loosehealth= false;
+var enemydmg = 3;
+var widthHealthBar = 450;
+var chunckOfLife = widthHealthBar/enemydmg;
+var gameover = false;
+
+function preload(){
+	charimg = loadAnimation("assets/WelkLeft/sprite_0.png")
+	charWalk = loadAnimation("assets/WelkLeft/sprite_0.png", "assets/WelkLeft/sprite_6.png");
+	enemyimg = loadAnimation("assets/WelkLeft/sprite_0.png")
+	enemyWalk = loadAnimation("assets/WelkLeft/sprite_0.png", "assets/WelkLeft/sprite_6.png");
+	shoot = loadAnimation("assets/Shoot/sprite_1.png", "assets/Shoot/sprite_2.png")
+	platImg = loadImage("assets/platform_0.png");
+	platImg1 = loadImage("assets/platform_1.png");
+	bulletShootgun = loadAnimation("assets/shootgun/shootgun0.png", "assets/shootgun/shootgun2.png")
+	shootgunsound = loadSound('assets/shootgunsound1.mp3');
+	reload = loadSound("assets/shootgunreloadsound.mp3");
+	gunsound = loadSound("assets/gunsound.mp3");
+	dmg = loadSound("assets/dmgsound.mp3");
+}
+	
 
 function setup() {
 	createCanvas(1000, 600);
-
-	// setup for the character
-	character = createSprite(20, 300, 20, 20);
-	character.speed = 3;
-
-	// setup for the enemies
-	enemies = new Group();
-	for (let i = 1; i <= 5; i++) {
-		enemy = createSprite(200 * i, 300, 20, 20);
-		enemies.add(enemy);
-	}
+	setupBullet();
+	setupPlatform();
+	setupCharacter();
+	setupEnemy();
 
 	// setup for the ground
-	groundImg = loadImage("assets/ground.png");
-	ground = createSprite(width / 2, height + 80);
-	ground.addImage(groundImg);
-	ground.scale = 2;
-
+	ground = createSprite(0, height, 1600, 200);
+	// ground.addImage(groundImg);
 	// setup for the leftBound
 	wallLeft = createSprite(-290, height / 2, 10, height);
 	wallLeft.immovable = true;
-
-	// setup for the bullets
-	bullets = new Group();
-
-	// setup for the platforms
-	platImg = loadImage("assets/New Piskel.png");
-	platforms = new Group();
-	for (var i = 0; i < 8; i++) {
-		// x = Math.floor((Math.random() * 1000) + 1);
-		// y = Math.floor((Math.random() * 500) + 1);
-		createPlatform(150 * i, 300, 20, 10);
-	}
-
 }
 
 function draw() {
-	background(0);
+	background(17, 96, 195);
 	drawSprites();
-
-	character.debug = true;
-	ground.debug = true;
-	wallLeft.debug = true;
-
-
-	// getting the camera to follow a player untill a certain limit
-	camera.position.x = character.position.x;
-	camera.position.y = character.position.y;
-	if (camera.position.x <= 206) {
-		camera.position.x = 206;
-	}
-	if (camera.position.y >= 300) {
-		camera.position.y = 300;
-	}
-
-	// the player can only jump when touching the ground
-	jumpAllow = true;
-	for (var i = 0; i < platforms.length; i++) {
-		platforms[i].debug = true;
-		if (character.collide(ground) || character.collide(platforms[i])) {
-			character.velocity.y = 0;
-			jumpAllow = true;
+	rect(50, 200, 150, 70);
+	character.changeAnimation('stand');
+	healthBar(widthHealthBar);
+	if(!gameover){
+		if (loosehealth){
+			console.log('hit');
+			// dmg.play();
+			updateHealthBar();
 		}
-		for (let y = 0; y < enemies.length; y++) {
-			if (enemies[y].collide(ground) || enemies[y].collide(platforms[i])) {
-				enemies[y].velocity.y = 0;
-			}
+		loosehealth = false;
+
+		if (widthHealthBar <= 0){
+			gameover = true;
 		}
-	}
-
-	// apply gravity
-	character.velocity.x = 0;
-	character.velocity.y += gravity;
-	for (let i = 0; i < enemies.length; i++) {
-		enemies[i].velocity.y += gravity;
-	}
-
-	//  commands
-	if (keyIsDown(RIGHT_ARROW)) {
-		character.velocity.x = 3;
-	} else if (keyIsDown(LEFT_ARROW)) {
-		character.velocity.x = -3;
-	}
-	if (keyWentDown(" ") && jumpAllow) {
-		character.velocity.y = -jump;
-	}
-
-	if (keyWentDown("z")) {
-		bullet = createSprite(character.position.x, character.position.y, 10, 10);
-		bullets.add(bullet);
-	}
-
-	// bullets colisions and setup
-	for (var i = 0; i < bullets.length; i++) {
-		bullets[i].velocity.x = 5;
-		for (var k = 0; k < platforms.length; k++) {
-			if (bullets[i].collide(platforms[k])) {
-				bullets[i].remove();
-				break
-			}
+		
+		// getting the camera to follow the character
+		followCharacter();
+		
+		// the player can only jump when touching the ground
+		jumpAllow = false;
+		for (var i = 0; i < platforms.length; i++) {
+			// platforms[i].debug = true;
+			updateChar(i);
+			updateEnemy(i);
 		}
+	
+		// apply gravity and apply rules to enemies
+		character.velocity.x = 0;
+		character.velocity.y += gravity;
+		enemyShoot();
+	
+		//  commands for player
+		commands();
+	
+		// bullets colisions and setup
+		charbulletCollision();
+		enemybulletCollision();
 	}
-
-}
-
-// more flexible way of creating platforms
-function createPlatform(_x, _y, _h, _w) {
-	plat = createSprite(_x, _y, _h, _w);
-	plat.addImage(platImg);
-	plat.scale = 1;
-	platforms.add(plat);
+	
+	if(gameover){
+		console.log('Game Over..');
+		newGame();
+	}
 }

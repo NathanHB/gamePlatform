@@ -1,36 +1,50 @@
 
-class Character {
-    constructor(_x, _y, _h, _w) {
-        this.x = _x;
-        this.y = _y;
-        this.h = _h;
-        this.w = _w;
-        this.gravity = 1;
-        this.vy = 0;
-    }
+function setupCharacter(){
+    character = createSprite(20, 450, 25, 50);
+	// character.addImage(charimg);
+	character.scale = 0.04;
+	character.setCollider("rectangle", 0, -10, 1000, 2000);
+	character.addAnimation('walk', charWalk);
+	character.addAnimation('stand', charimg);
+	character.addAnimation('shoot', shoot);
+}
 
-    show(){
-        noStroke();
-        fill(255);
-        rectMode(CENTER)
-        rect(this.x, this.y, this.h, this.w);
-        this.vy += this.gravity
-        this.y += this.vy
-        if (this.y >= 500){
-            this.y = 500;
-        }
+function updateChar(i){
+    if (character.collide(ground) || character.collide(platforms[i])) {
+        character.velocity.y = 0;
+        jumpAllow = true;
     }
+}
 
-    jump(){
-        this.vy = -this.gravity*17;
-    }
+function commands(){
+    if (keyIsDown(RIGHT_ARROW)) {
+		character.velocity.x = 5;
+		character.changeAnimation('walk');
+		character.mirrorX(-1);
+		direction = 'R'
+	} else if (keyIsDown(LEFT_ARROW)) {
+		character.velocity.x = -5;
+		character.changeAnimation('walk');
+		character.mirrorX(1);
+		direction = "L"
+	}
+	if (keyWentDown(UP_ARROW) && jumpAllow) {
+		character.velocity.y = -jump;
+	}
 
-    colide(){
-        return true;
-    }
-
-    move(vx){
-        this.x += vx;
-    }
-
+	if (keyWentDown(" ")) {
+		if(direction == 'R'){
+			shootgun(character.position.x+22, character.position.y-12, 6, 6, 10);
+		}
+		else{
+			shootgun(character.position.x-22, character.position.y-12, 6, 6, -10);
+		}
+		shootgunsound.setVolume(0.7);
+		// shootgunsound.play();
+		character.changeAnimation('shoot');
+	}
+	if (keyWentDown("r")){
+		reload.setVolume(1.5);
+		reload.play();
+	} 
 }
