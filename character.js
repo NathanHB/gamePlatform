@@ -40,7 +40,7 @@ function commands(){
 			shootgun(character.position.x-22, character.position.y-12, 6, 6, -10);
 		}
 		shootgunsound.setVolume(0.7);
-		// shootgunsound.play();
+		shootgunsound.play();
 		character.changeAnimation('shoot');
 	}
 	if (keyWentDown("r")){

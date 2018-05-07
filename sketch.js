@@ -18,6 +18,8 @@ var enemydmg = 3;
 var widthHealthBar = 450;
 var chunckOfLife = widthHealthBar/enemydmg;
 var gameover = false;
+var clouds;
+var enemyHit = false;
 
 function preload(){
 	charimg = loadAnimation("assets/WelkLeft/sprite_0.png")
@@ -32,15 +34,19 @@ function preload(){
 	reload = loadSound("assets/shootgunreloadsound.mp3");
 	gunsound = loadSound("assets/gunsound.mp3");
 	dmg = loadSound("assets/dmgsound.mp3");
+	cloud_0 = loadImage("assets/cloud_0.png");
+	cloud_1 = loadImage("assets/cloud_1.png");
+	cloud_2 =  loadImage("assets/cloud_2.png");
 }
 	
 
 function setup() {
 	createCanvas(1000, 600);
+	backGround();
 	setupBullet();
 	setupPlatform();
-	setupCharacter();
 	setupEnemy();
+	setupCharacter();
 
 	// setup for the ground
 	ground = createSprite(0, height, 1600, 200);
@@ -53,7 +59,6 @@ function setup() {
 function draw() {
 	background(17, 96, 195);
 	drawSprites();
-	rect(50, 200, 150, 70);
 	character.changeAnimation('stand');
 	healthBar(widthHealthBar);
 	if(!gameover){

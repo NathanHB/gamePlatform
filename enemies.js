@@ -1,13 +1,15 @@
 
 function setupEnemy(){
-    enemies = new Group();
-	for (let i = 1; i <= 1; i++) {
+	enemies = new Group();
+	var numberOfEnemies = 5;
+	for (let i = 1; i <= numberOfEnemies; i++) {
 		enemy = createSprite(250 * i, 300, 20, 20);
 		enemy.scale = 0.04;
 		enemy.setCollider("rectangle", 0, -10, 700, 2000);
 		enemy.addAnimation('enemyWalk', enemyWalk);
 		enemy.addAnimation('enemyStand', enemyimg);
 		enemy.addAnimation('shoot', shoot);
+		enemy.w = 95;
 		enemies.add(enemy);
 	}
 }
@@ -18,7 +20,12 @@ function updateEnemy(i){
 		enemies[y].changeAnimation('enemyStand');
         if (enemies[y].collide(ground) || enemies[y].collide(platforms[i])) {
             enemies[y].velocity.y = 0;
-        }
+		}
+		if (enemies[y].w <= 0){
+			enemies[y].remove();
+			break;
+		}
+		enemyHealthBar(enemies[y].position.x, enemies[y].position.y, enemies[y].w);
     }
 }
 
@@ -37,7 +44,7 @@ function enemyShoot(){
 			enemies[i].velocity.x = 0;
 			createBullet(xe-22, ye-12, 10, 10, 10, angl, false);
 			enemy.changeAnimation('shoot')
-			// gunsound.play();
+			gunsound.play();
 		}
 	}
 }

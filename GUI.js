@@ -23,5 +23,34 @@ function newGame(){
 }
 
 function enemyHealthBar(_x, _y, _w){
-	
+	fill(255);
+	rect(_x - 45, _y - 70, 100, 10, 15);
+	noStroke();
+	fill(255, 0, 0);
+	rect(_x - 43, _y - 69, _w, 8, 15);
 }
+
+function updateEnemyHealthBar(_k){
+	enemies[_k].w -= 95/25;
+ }
+
+function backGround(){
+	clouds = new Group();
+	for (var i = 0; i < 12; i++){
+		cloud = createSprite(Math.random()*2600, Math.random()*500);
+		k = Math.floor(Math.random()*3);
+		switch(k){
+			case 0:
+				cloud.addImage(cloud_0);
+				break;
+			case 1:
+				cloud.addImage(cloud_1);
+				break;
+			case 2:
+				cloud.addImage(cloud_2);
+				break;
+		}
+		clouds.add(cloud);
+	}
+}
+

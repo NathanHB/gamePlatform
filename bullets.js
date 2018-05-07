@@ -7,20 +7,23 @@ function setupBullet(){
 function charbulletCollision(){
     for (var i = 0; i < charbullets.length; i++) {
 		charbullets[i].changeAnimation('shootgun');
-		for (let k = 0; k < enemies.length; k++) {
-			if (charbullets[i].collide(enemies[k])) {
-				charbullets[i].remove();
-				break
-			}
-			else{
-				for (var y = 0; y < platforms.length; y++) {
-					if (charbullets[i].collide(platforms[y])) {
-						charbullets[i].remove();
-						break
-					}
-					else if(distance(charbullets[i].position.x, character.position.x, charbullets[i].position.y, character.position.y)> 100){
-						charbullets[i].remove();
-						break
+		loop1:
+			for (let k = 0; k < enemies.length; k++) {
+				if (charbullets[i].collide(enemies[k])) {
+					charbullets[i].remove();
+					updateEnemyHealthBar(k);
+					console.log("Hit");
+					break loop1;
+				}
+				else{
+					for (var y = 0; y < platforms.length; y++) {
+						if (charbullets[i].collide(platforms[y])) {
+							charbullets[i].remove();
+							break loop1;
+						}
+						else if(distance(charbullets[i].position.x, character.position.x, charbullets[i].position.y, character.position.y)> 100){
+							charbullets[i].remove();
+							break loop1;
 					}
 				}
 			}
