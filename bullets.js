@@ -11,8 +11,8 @@ function charbulletCollision(){
 			for (let k = 0; k < enemies.length; k++) {
 				if (charbullets[i].collide(enemies[k])) {
 					charbullets[i].remove();
-					updateEnemyHealthBar(k);
-					console.log("Hit");
+					enemyHit = true;
+					enemyNum = k;
 					break loop1;
 				}
 				else{
@@ -52,12 +52,12 @@ function enemybulletCollision(){
 
 
 // shoot Bullets
-function createBullet(_x, _y, _w, _h, _vx, rotation, k) {
+function createBullet(_x, _y, _w, _h, _vx, rotation, charB) {
 	bullet = createSprite(_x, _y, _w, _h);
 	bullet.rotation = rotation*60;
 	bullet.addSpeed(_vx, bullet.rotation);
 	bullet.addAnimation('shootgun', bulletShootgun);
-	if (k){
+	if (charB){
 		charbullets.add(bullet);
 	}
 	else{

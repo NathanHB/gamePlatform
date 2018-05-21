@@ -21,3 +21,12 @@ function createPlatform(_x, _y, offy, w, img) {
 	plat.setCollider("rectangle", 0, offy, w, 24);
 	platforms.add(plat);
 }
+
+function movingPLatform(){
+	// platforms[4] will be moving on X axis
+	
+	if (platforms[4].position.x > 1000+200 || platforms[4].position.x < 1000-150){
+		platVX *= -1
+	}
+	platforms[4].velocity.x = platVX;
+}

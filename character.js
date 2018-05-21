@@ -11,6 +11,12 @@ function setupCharacter(){
 
 function updateChar(i){
     if (character.collide(ground) || character.collide(platforms[i])) {
+		if(i==4){
+			collidePLat4 = true;
+		}
+		else{
+			collidePLat4 = false;
+		}
         character.velocity.y = 0;
         jumpAllow = true;
     }
@@ -30,6 +36,10 @@ function commands(){
 	}
 	if (keyWentDown(UP_ARROW) && jumpAllow) {
 		character.velocity.y = -jump;
+	}
+	if (collidePLat4){
+		character.velocity.x += platVX
+		console.log('nfjkd')
 	}
 
 	if (keyWentDown(" ")) {

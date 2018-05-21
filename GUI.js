@@ -31,10 +31,12 @@ function enemyHealthBar(_x, _y, _w){
 }
 
 function updateEnemyHealthBar(_k){
-	enemies[_k].w -= 95/25;
+	// 95 = width of the original health bar
+	enemies[_k].w -= 95/playerDmg;
  }
 
 function backGround(){
+	//  randmly generate clouds in the background
 	clouds = new Group();
 	for (var i = 0; i < 12; i++){
 		cloud = createSprite(Math.random()*2600, Math.random()*500);
@@ -54,3 +56,6 @@ function backGround(){
 	}
 }
 
+function score(){
+	text('SCORE: ' + points, camera.position.x - 480, camera.position.y-230);
+}

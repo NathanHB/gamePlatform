@@ -11,16 +11,21 @@ var enemybullets;
 var platforms;
 var enemies;
 var shootRate = 1;
-var nextFire = 0;
 var direction = 'L'
 var loosehealth= false;
-var enemydmg = 3;
+var enemydmg = 6;
 var widthHealthBar = 450;
 var chunckOfLife = widthHealthBar/enemydmg;
 var gameover = false;
 var clouds;
 var enemyHit = false;
+var points = 0;
+var playerDmg = 1;
+var enemyNum;
+var platVX = 2;
+var collidePLat4;
 
+// load all off the assets
 function preload(){
 	charimg = loadAnimation("assets/WelkLeft/sprite_0.png")
 	charWalk = loadAnimation("assets/WelkLeft/sprite_0.png", "assets/WelkLeft/sprite_6.png");
@@ -29,7 +34,7 @@ function preload(){
 	shoot = loadAnimation("assets/Shoot/sprite_1.png", "assets/Shoot/sprite_2.png")
 	platImg = loadImage("assets/platform_0.png");
 	platImg1 = loadImage("assets/platform_1.png");
-	bulletShootgun = loadAnimation("assets/shootgun/shootgun0.png", "assets/shootgun/shootgun2.png")
+	bulletShootgun = loadAnimation("assets/shootgun/shootgun0.png", "assets/shootgun/shootgun2.png");
 	shootgunsound = loadSound('assets/shootgunsound1.mp3');
 	reload = loadSound("assets/shootgunreloadsound.mp3");
 	gunsound = loadSound("assets/gunsound.mp3");
@@ -39,7 +44,7 @@ function preload(){
 	cloud_2 =  loadImage("assets/cloud_2.png");
 }
 	
-
+// setup the environment
 function setup() {
 	createCanvas(1000, 600);
 	backGround();
@@ -54,17 +59,23 @@ function setup() {
 	// setup for the leftBound
 	wallLeft = createSprite(-290, height / 2, 10, height);
 	wallLeft.immovable = true;
+	
 }
+
 
 function draw() {
 	background(17, 96, 195);
 	drawSprites();
+	
 	character.changeAnimation('stand');
-	healthBar(widthHealthBar);
+	// while gameOver is false, the game goes on
 	if(!gameover){
+		score();
+		healthBar(widthHealthBar);
+
 		if (loosehealth){
 			console.log('hit');
-			// dmg.play();
+			dmg.play();
 			updateHealthBar();
 		}
 		loosehealth = false;
@@ -76,8 +87,12 @@ function draw() {
 		// getting the camera to follow the character
 		followCharacter();
 		
+		// bullets colisions
+		charbulletCollision();
+		enemybulletCollision();
+
 		// the player can only jump when touching the ground
-		jumpAllow = false;
+		jumpAllow = true;
 		for (var i = 0; i < platforms.length; i++) {
 			// platforms[i].debug = true;
 			updateChar(i);
@@ -91,11 +106,8 @@ function draw() {
 	
 		//  commands for player
 		commands();
-	
-		// bullets colisions and setup
-		charbulletCollision();
-		enemybulletCollision();
 	}
+	movingPLatform();
 	
 	if(gameover){
 		console.log('Game Over..');
