@@ -13,14 +13,14 @@ var enemies;
 var shootRate = 1;
 var direction = 'L'
 var loosehealth= false;
-var enemydmg = 6;
+var enemydmg = 3;
 var widthHealthBar = 450;
 var chunckOfLife = widthHealthBar/enemydmg;
 var gameover = false;
 var clouds;
 var enemyHit = false;
-var points = 0;
-var playerDmg = 1;
+var points = 500;
+var playerDmg = 6;
 var enemyNum;
 var platVX = 2;
 var collidePLat4;
@@ -52,6 +52,7 @@ function setup() {
 	setupPlatform();
 	setupEnemy();
 	setupCharacter();
+	setupObjective();
 
 	// setup for the ground
 	ground = createSprite(0, height, 1600, 200);
@@ -66,13 +67,12 @@ function setup() {
 function draw() {
 	background(17, 96, 195);
 	drawSprites();
-	
 	character.changeAnimation('stand');
 	// while gameOver is false, the game goes on
 	if(!gameover){
 		score();
 		healthBar(widthHealthBar);
-
+		
 		if (loosehealth){
 			console.log('hit');
 			dmg.play();
@@ -83,7 +83,7 @@ function draw() {
 		if (widthHealthBar <= 0){
 			gameover = true;
 		}
-		
+		getObjective();
 		// getting the camera to follow the character
 		followCharacter();
 		
@@ -106,6 +106,7 @@ function draw() {
 	
 		//  commands for player
 		commands();
+		
 	}
 	movingPLatform();
 	

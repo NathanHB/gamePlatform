@@ -20,6 +20,7 @@ function newGame(){
 	setupEnemy();
 	character.position.x = 20;
 	character.position.y = 450;
+	points = 500;
 }
 
 function enemyHealthBar(_x, _y, _w){

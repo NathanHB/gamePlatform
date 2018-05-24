@@ -37,6 +37,7 @@ function enemybulletCollision(){
 		if (enemybullets[i].collide(character)) {
 			loosehealth = true;
 			enemybullets[i].remove();
+			points -= 50;
 			break
 		}
 		else{
@@ -71,3 +72,4 @@ function shootgun(_x, _y, _w, _h, _vx){
 	createBullet(_x, _y, _w, _h, _vx, 0.05, true);
 	createBullet(_x, _y, _w, _h, _vx, -0.05, true);
 }
+

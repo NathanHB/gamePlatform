@@ -45,6 +45,7 @@ function updateEnemy(i){
 
 		if (enemies[y].w <= 0){
 			enemies[y].remove();
+			points += 100;
 			break;
 		}
 

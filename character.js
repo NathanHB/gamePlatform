@@ -19,7 +19,10 @@ function updateChar(i){
 		}
         character.velocity.y = 0;
         jumpAllow = true;
-    }
+	}
+	if(character.position.y >= 600){
+		gameover = true;
+	}
 }
 
 function commands(){
